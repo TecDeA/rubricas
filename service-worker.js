@@ -1,5 +1,5 @@
 ///asignar un nombre y versión al cache
-const CACHE_NAME = 'xamplepwa6',
+const CACHE_NAME = 'xamplepwa8',
     urlsToCache = [
         '.',
         './index.html',
@@ -45,7 +45,7 @@ self.addEventListener('activate', e => {
                 return Promise.all(
                     cacheNames.map(cacheName => {
                         //Eliminamos lo que ya no se necesita en cache
-                        if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        if (cacheWhitelist.indexOf(cacheName) === -1 && cacheName.indexOf('xamplepwa') === 0) {
                             return caches.delete(cacheName)
                         }
                     })
