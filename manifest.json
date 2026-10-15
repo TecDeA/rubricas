@@ -1,7 +1,9 @@
 {
   "name": "Rúbricas para materias del Departamento de Tecnología",
   "short_name": "Rúbricas Tecno",
-  "start_url": "/RubricasTecno/index.html",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3f51b5",
