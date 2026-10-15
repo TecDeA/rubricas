@@ -99,6 +99,73 @@
             line-height: 1.12;
         }
 
+        /* ===== Chip dinámico de versión ===== */
+        .version-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 6px 13px 6px 11px;
+            border-radius: 999px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            font-size: clamp(.72rem, 2.3vw, .8rem);
+            font-weight: 600;
+            letter-spacing: .01em;
+            box-shadow: var(--shadow-1);
+            line-height: 1;
+            vertical-align: middle;
+        }
+        .version-chip-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+            flex: none;
+            animation: vc-pulse 2s ease-in-out infinite;
+        }
+        .version-chip-label { color: var(--text-3); font-weight: 500; }
+        .version-chip-value {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .version-chip.is-loading .version-chip-dot {
+            background: var(--text-3);
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, .18);
+        }
+        .version-chip.is-loading .version-chip-value::after {
+            content: "";
+            display: inline-block;
+            width: 22px;
+            height: .8em;
+            margin-left: 2px;
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            border-radius: 4px;
+            animation: vc-shimmer 1.2s linear infinite;
+            vertical-align: middle;
+        }
+        .version-chip.is-error .version-chip-dot {
+            background: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, .18);
+            animation: none;
+        }
+        .version-chip.is-error .version-chip-value { color: #b45309; }
+        @keyframes vc-pulse {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(22, 163, 74, .15); }
+            50%      { box-shadow: 0 0 0 6px rgba(22, 163, 74, .04); }
+        }
+        @keyframes vc-shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .version-chip-dot { animation: none; }
+            .version-chip.is-loading .version-chip-value::after { animation: none; }
+        }
+
         .hero p {
             margin: 12px auto 0;
             max-width: 62ch;
@@ -232,6 +299,27 @@
             gap: 14px;
         }
 
+        /* Filas agrupadas: una fila por bloque temático (CYR / TYD / TEC+DIG).
+           Cada fila se centra y envuelve si no caben todas las tarjetas. */
+        .subjects-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: clamp(14px, 2vw, 20px);
+        }
+        .subjects-row:last-child { margin-bottom: 0; }
+        .subjects-row > .subject-card {
+            flex: 0 0 240px;
+            max-width: calc(100% - 14px);
+        }
+        @media (max-width: 540px) {
+            .subjects-row > .subject-card {
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+        }
+
         .subject-card {
             position: relative;
             display: flex;
@@ -344,6 +432,14 @@
                 Departamento de Tecnología · IES Virgen de Villadiego
             </div>
             <h1>Generación de Rúbricas<br>de Evaluación</h1>
+
+            <!-- Chip dinámico de versión (lee CACHE_NAME desde service-worker.js) -->
+            <span class="version-chip is-loading" id="versionChip" aria-live="polite" aria-label="Versión de la aplicación">
+                <span class="version-chip-dot" aria-hidden="true"></span>
+                <span class="version-chip-label">Versión</span>
+                <span class="version-chip-value" id="versionValue">…</span>
+            </span>
+
             <p>Elige una materia para consultar sus criterios y rúbricas, pásalas al módulo de evaluación y calcula las notas de tu grupo.</p>
         </header>
 
@@ -378,8 +474,8 @@
         <!-- Materias -->
         <section aria-label="Materias">
             <h2 class="section-title">Materias <span>· rúbricas por curso</span></h2>
-            <div class="subjects-grid">
-
+            <!-- Fila 1: Computación y Robótica (1º, 2º, 3º ESO) -->
+            <div class="subjects-row">
                 <a class="subject-card" href="CYR1.html" style="--chip:#2563eb">
                     <span class="subject-icon" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -430,7 +526,10 @@
                         </span>
                     </span>
                 </a>
+            </div>
 
+            <!-- Fila 2: Tecnología y Digitalización (2º, 3º ESO) -->
+            <div class="subjects-row">
                 <a class="subject-card" href="TYD2.html" style="--chip:#0d9488">
                     <span class="subject-icon" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -460,7 +559,10 @@
                         </span>
                     </span>
                 </a>
+            </div>
 
+            <!-- Fila 3: Tecnología (4º ESO) y Digitalización (4º ESO) -->
+            <div class="subjects-row">
                 <a class="subject-card" href="TEC4.html" style="--chip:#d97706">
                     <span class="subject-icon" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -501,5 +603,76 @@
     </div>
 
     <script src="./regist_serviceWorker.js"></script>
+
+    <!-- Chip dinámico de versión: lee CACHE_NAME desde service-worker.js -->
+    <script>
+    (function loadVersionChip() {
+        const chip = document.getElementById('versionChip');
+        const valueEl = document.getElementById('versionValue');
+        if (!chip || !valueEl) return;
+
+        // Rutas candidatas: el usuario puede llamarlo sw.js o service-worker.js
+        const SW_URLS = ['./service-worker.js', './sw.js'];
+        // Evita la caché del SW para que siempre refleje la versión actual
+        const fetchOpts = { cache: 'no-store' };
+
+        async function tryFetchText(urls) {
+            let lastErr;
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, fetchOpts);
+                    if (!res.ok) { lastErr = new Error(url + ' → HTTP ' + res.status); continue; }
+                    return await res.text();
+                } catch (err) {
+                    lastErr = err;
+                }
+            }
+            throw lastErr || new Error('No se pudo cargar el service worker');
+        }
+
+        function extractVersion(text) {
+            // Busca:  CACHE_NAME = 'xamplepwa8'  o  'xamplepwa2.3'  (comillas simples o dobles)
+            const m = text.match(/CACHE_NAME\s*=\s*['"]([^'"]+)['"]/);
+            if (!m) return null;
+            const cacheName = m[1].trim();
+            // Extrae la versión del nombre de caché. Acepta:
+            //   "xamplepwa8"          → "8"
+            //   "xamplepwa2.3"        → "2.3"
+            //   "xamplepwa1.2.3"      → "1.2.3"
+            //   "xamplepwa2025.10.16" → "2025.10.16"
+            //   "xamplepwa2.3-beta"   → "2.3"   (admite sufijo tras la versión)
+            //   "xamplepwa2.3_rc1"    → "2.3"   (ignora sufijos tipo _rc1, -beta, etc.)
+            // Estrategia: prioriza la secuencia más larga de dígitos separados por puntos.
+            let v = cacheName.match(/(\d+(?:\.\d+)+)(?=[^\d.]|$)/);
+            if (!v) v = cacheName.match(/(\d+)(?=[^\d.]|$)/);
+            return v ? v[1] : cacheName;
+        }
+
+        function setOk(version) {
+            chip.classList.remove('is-loading', 'is-error');
+            valueEl.textContent = 'v' + version;
+            chip.setAttribute('title', 'Versión ' + version + ' (leída de service-worker.js)');
+        }
+        function setError(msg) {
+            chip.classList.remove('is-loading');
+            chip.classList.add('is-error');
+            valueEl.textContent = 'N/D';
+            chip.setAttribute('title', 'No se pudo leer la versión: ' + msg);
+            if (window.console && console.warn) console.warn('[version-chip]', msg);
+        }
+
+        try {
+            tryFetchText(SW_URLS)
+                .then(text => {
+                    const v = extractVersion(text);
+                    if (v) setOk(v);
+                    else setError('CACHE_NAME no encontrado en service-worker.js');
+                })
+                .catch(err => setError(err && err.message ? err.message : String(err)));
+        } catch (err) {
+            setError(err && err.message ? err.message : String(err));
+        }
+    })();
+    </script>
 </body>
 </html>
